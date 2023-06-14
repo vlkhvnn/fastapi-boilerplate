@@ -1,6 +1,5 @@
 from typing import Any
-
-from fastapi import Depends
+from fastapi import Depends, Response
 from pydantic import Field
 
 
@@ -34,4 +33,6 @@ def create_shanyrak(
     svc: Service = Depends(get_service),
 ) -> dict[str, str]:
     shanyrak_id = svc.repository.create_shanyrak(jwt_data.user_id, input.dict())
+    if shanyrak_id is None:
+        return Response(status_code=404)
     return CreateShanyrakResponse(id=shanyrak_id)
