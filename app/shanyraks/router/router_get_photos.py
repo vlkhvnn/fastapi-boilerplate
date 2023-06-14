@@ -1,5 +1,4 @@
 from typing import Any, List
-
 from fastapi import Depends, Response
 from pydantic import Field
 from app.utils import AppModel
@@ -18,16 +17,15 @@ class GetShanyrakResponse(AppModel):
     rooms_count: int
     description: str
     user_id: Any
-    comments: List[dict[str, str]]
     media: List[str]
 
 
-@router.get("/{shanyrak_id:str}", response_model=GetShanyrakResponse)
-def get_shanyrak(
+@router.get("/{id}", response_model=GetShanyrakResponse)
+def get_media(
     shanyrak_id: str,
     svc: Service = Depends(get_service),
 ) -> dict[str, str]:
-    shanyrak = svc.repository.get_shanyrak(shanyrak_id)
+    shanyrak = svc.repository.get_media(shanyrak_id)
     if shanyrak is None:
         return Response(status_code=404)
     return GetShanyrakResponse(**shanyrak)
