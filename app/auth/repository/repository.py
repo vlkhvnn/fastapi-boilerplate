@@ -1,6 +1,6 @@
 from datetime import datetime
-from typing import Optional
-
+from typing import Optional, List
+from pymongo.results import UpdateResult
 from bson.objectid import ObjectId
 from pymongo.database import Database
 
@@ -16,6 +16,10 @@ class AuthRepository:
             "email": user["email"],
             "password": hash_password(user["password"]),
             "created_at": datetime.utcnow(),
+            "avatar_url" : "",
+            "phone": "",
+            "name": "",
+            "city": ""
         }
 
         self.database["users"].insert_one(payload)
@@ -47,3 +51,41 @@ class AuthRepository:
                 }
             },
         )
+    
+    def add_to_favourites(self, user_id: str, shanyrak_id: str) -> UpdateResult:
+        return self.database["users"].update_one(
+            filter={"_id": ObjectId(user_id)},
+            update={
+                "$push": {"favourites": shanyrak_id},
+            },
+        )
+    
+    def get_favourites(self, user_id: str) -> List[dict[str, str]]:
+        document = self.database["users"].find_one(
+            {"_id": ObjectId(user_id)},
+            {"favourites": 1}
+        )
+        if document:
+            favourites = document.get("favourites", [])
+            return favourites
+        else:
+            return []
+
+    def delete_favourite(self, shanyrak_id: str, user_id: str) -> UpdateResult:
+        return self.database["users"].update_one(
+            {"_id": ObjectId(user_id)},
+            {"$pull": {"favourites": shanyrak_id}}
+        )
+
+    def add_avatar(self, url: str, user_id: str) -> UpdateResult:
+        self.database["users"].update_one(
+            filter={"_id": ObjectId(user_id)},
+            update={"$set": {"avatar_url": url}}
+        )
+    
+    def delete_avatar(self, user_id: str) -> UpdateResult:
+        return self.database["users"].update_one(
+            {"_id": ObjectId(user_id)},
+            update={"$set": {"avatar_url": ""}}
+        )
+    

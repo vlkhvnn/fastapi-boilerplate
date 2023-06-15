@@ -12,6 +12,7 @@ class ShanyrakRepository:
     def create_shanyrak(self, user_id: str, data: dict[str, Any]):
         data["user_id"] = ObjectId(user_id)
         data["comments"] = []
+        data["media"] = []
         insert_result = self.database["shanyraks"].insert_one(data)
         return insert_result.inserted_id
 
