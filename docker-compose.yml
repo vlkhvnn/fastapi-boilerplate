@@ -7,8 +7,6 @@ services:
       dockerfile: ./deploy/dockerfiles/Dockerfile
     environment:
       - MONGOHOST=mongodb
-      - AWS_ACCESS_KEY_ID=AKIAVL2UUMTHCOUGZLWY
-      - AWS_SECRET_ACCESS_KEY=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
     env_file: .env
     volumes:
       - ./:/code
