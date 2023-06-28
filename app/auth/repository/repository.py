@@ -1,9 +1,7 @@
 from datetime import datetime
 from typing import Optional, List
-from pymongo.results import UpdateResult
 from bson.objectid import ObjectId
 from pymongo.database import Database
-
 from ..utils.security import hash_password
 
 
@@ -51,40 +49,40 @@ class AuthRepository:
             },
         )
     
-    def add_to_favourites(self, user_id: str, shanyrak_id: str) -> UpdateResult:
+    def get_chat_history_by_id(self, user_id: str) -> List[dict[str, str]]:
+        data = self.database["users"].find_one({"_id": ObjectId(user_id)})
+        return data["chat_history"]
+
+    def add_user_message(self, user_id: str, user_message: str):
         return self.database["users"].update_one(
             filter={"_id": ObjectId(user_id)},
             update={
-                "$push": {"favourites": shanyrak_id},
+                "$push": {"chat_history": {'role': 'user', 'content': user_message}}
+            },
+        )
+
+    def add_response(self, user_id: str, response: str):
+        return self.database["users"].update_one(
+            filter={"_id": ObjectId(user_id)},
+            update={
+                "$push": {"chat_history": {'role': 'assistant', 'content': response}}
             },
         )
     
-    def get_favourites(self, user_id: str) -> List[dict[str, str]]:
-        document = self.database["users"].find_one(
-            {"_id": ObjectId(user_id)},
-            {"favourites": 1}
-        )
+    def delete_first_message_from_chat(self, user_id: str):
+        self.database["users"].update_one({"_id": ObjectId(user_id)}, {"$pop": {"chat_history": -1}})
+
+    def ensure_fit_tokens(self, user_id: str):
+        if self.calculate_chat_size(user_id) > 10:
+            self.delete_first_message_from_chat(user_id)
+            self.delete_first_message_from_chat(user_id)
+
+    def calculate_chat_size(self, user_id: str):
+        document = self.database["users"].find_one({"_id": ObjectId(user_id)})
         if document:
-            favourites = document.get("favourites", [])
-            return favourites
+            chat_history = document.get("chat_history", [])
+            return len(chat_history)
         else:
-            return []
+            return 0
 
-    def delete_favourite(self, shanyrak_id: str, user_id: str) -> UpdateResult:
-        return self.database["users"].update_one(
-            {"_id": ObjectId(user_id)},
-            {"$pull": {"favourites": shanyrak_id}}
-        )
 
-    def add_avatar(self, url: str, user_id: str) -> UpdateResult:
-        self.database["users"].update_one(
-            filter={"_id": ObjectId(user_id)},
-            update={"$set": {"avatar_url": url}}
-        )
-    
-    def delete_avatar(self, user_id: str) -> UpdateResult:
-        return self.database["users"].update_one(
-            {"_id": ObjectId(user_id)},
-            update={"$set": {"avatar_url": ""}}
-        )
-    

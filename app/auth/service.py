@@ -2,6 +2,7 @@ from pydantic import BaseSettings
 from app.config import database
 from .adapters.jwt_service import JwtService
 from .repository.repository import AuthRepository
+from .adapters.openai_service import OpenAIService
 
 
 class AuthConfig(BaseSettings):
@@ -21,6 +22,7 @@ class Service:
     ):
         self.repository = repository
         self.jwt_svc = jwt_svc
+        self.openaiService = OpenAIService()
 
 
 def get_service():
