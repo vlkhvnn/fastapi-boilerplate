@@ -15,6 +15,7 @@ class Config(BaseSettings):
     MONGOPASSWORD: str = "password"
     MONGODATABASE: str = "fastapi"
     MONGO_URL: str = ""
+    OPENAI_API_KEY: str = ""
 
 
 # environmental variables
@@ -30,6 +31,11 @@ mongo_url = (
 )
 if env.MONGO_URL:
     mongo_url = env.MONGO_URL
+
+openai_api = ""
+
+if env.OPENAI_API_KEY:
+    openai_api = env.OPENAI_API_KEY
 
 # MongoDB connection
 client = MongoClient(mongo_url)
