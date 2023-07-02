@@ -12,7 +12,7 @@ class AuthRepository:
     def create_user(self, user: dict):
         payload = {
             "username": user["username"],
-            "phonenumber": user["phonenumber"],
+            "phone": user["phone"],
             "password": hash_password(user["password"]),
             "created_at": datetime.utcnow(),
             "chat_history": []
