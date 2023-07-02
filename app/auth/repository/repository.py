@@ -11,11 +11,10 @@ class AuthRepository:
 
     def create_user(self, user: dict):
         payload = {
-            "email": user["email"],
+            "username": user["username"],
+            "phonenumber": user["phonenumber"],
             "password": hash_password(user["password"]),
             "created_at": datetime.utcnow(),
-            "phone": user["phone"],
-            "name": user["name"],
             "chat_history": []
         }
 
@@ -29,10 +28,10 @@ class AuthRepository:
         )
         return user
 
-    def get_user_by_email(self, email: str) -> Optional[dict]:
+    def get_user_by_phonenumber(self, phonenumber: str) -> Optional[dict]:
         user = self.database["users"].find_one(
             {
-                "email": email,
+                "phonenumber": phonenumber,
             }
         )
         return user
