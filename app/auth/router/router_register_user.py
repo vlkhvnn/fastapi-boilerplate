@@ -7,22 +7,28 @@ from . import router
 
 
 class RegisterUserRequest(AppModel):
-    username: str
+    email: str
     phone: str
     password: str
 
 
+class RegisterUserResponse(AppModel):
+    email: str
+
+
 @router.post(
-    "/users", status_code=status.HTTP_201_CREATED
+    "/users", status_code=status.HTTP_201_CREATED, response_model=RegisterUserResponse
 )
 def register_user(
     input: RegisterUserRequest,
     svc: Service = Depends(get_service),
-) -> str:
-    if svc.repository.get_user_by_phonenumber(input.phone):
+) -> dict[str, str]:
+    if svc.repository.get_user_by_email(input.email):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Phonenumber is already taken.",
+            detail="Email is already taken.",
         )
+
     svc.repository.create_user(input.dict())
-    return input.username
+
+    return RegisterUserResponse(email=input.email)
