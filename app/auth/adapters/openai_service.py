@@ -25,7 +25,7 @@ class OpenAIService:
                     + user_message,
                 },
             ],
-            temperature=0.5,
+            temperature=0,
         )
         response = completion.choices[0].message["content"]
         # Extracting the generated response from OpenAI
