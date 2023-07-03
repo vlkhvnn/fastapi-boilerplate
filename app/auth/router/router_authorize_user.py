@@ -9,11 +9,6 @@ from . import router
 from .errors import InvalidCredentialsException
 
 
-class RegisterUserRequest(AppModel):
-    email: str
-    password: str
-
-
 class AuthorizeUserResponse(AppModel):
     access_token: str
     token_type: str = "Bearer"
@@ -21,10 +16,10 @@ class AuthorizeUserResponse(AppModel):
 
 @router.post("/users/tokens", response_model=AuthorizeUserResponse)
 def authorize_user(
-    input: RegisterUserRequest,
+    input: OAuth2PasswordRequestForm = Depends(),
     svc: Service = Depends(get_service),
 ) -> AuthorizeUserResponse:
-    user = svc.repository.get_user_by_email(input.email)
+    user = svc.repository.get_user_by_email(input.username)
 
     if not user:
         raise InvalidCredentialsException
