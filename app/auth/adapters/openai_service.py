@@ -5,8 +5,6 @@ openai.api_key = openai_api
 
 class OpenAIService:
     def generate_chat_response(self, user_message, conversation_history) -> str:
-        conversation_history.append({'role': 'user', 'content': user_message})
-        chat_input = '\n'.join([f"{message['role']}: {message['content']}" for message in conversation_history])
         # OpenAI API request
         completion = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
@@ -22,7 +20,7 @@ class OpenAIService:
                     + "; Если пользователь ищет машину в определенном городе то добавляй к ссылке '{city}/'"
                     + "; При рекомендации машины включай тип двигателя и варианты объема двигателя, тип привода машины и ее КПП"
                     + "; В контексте сообщений: "
-                    + chat_input
+                    + conversation_history
                     + "; "
                     + user_message,
                 },
@@ -30,6 +28,5 @@ class OpenAIService:
             temperature=0.5,
         )
         response = completion.choices[0].message["content"]
-        conversation_history.append({'role': 'assistant', 'content': response})
         # Extracting the generated response from OpenAI
         return response

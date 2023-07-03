@@ -13,6 +13,8 @@ class AuthRepository:
         payload = {
             "email": user["email"],
             "phone": user["phone"],
+            "name": "",
+            "city": "",
             "password": hash_password(user["password"]),
             "created_at": datetime.utcnow(),
             "chat_history": []
