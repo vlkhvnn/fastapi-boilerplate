@@ -1,5 +1,4 @@
 from . import router
-from typing import List
 from fastapi import Depends
 from app.auth.service import Service, get_service
 from ..adapters.jwt_service import JWTData
