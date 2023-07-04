@@ -4,8 +4,10 @@ openai.api_key = openai_api
 
 
 class OpenAIService:
-    def generate_chat_response(self, user_message, conversation_history) -> str:
+    def generate_chat_response(self, user_message, chat_history) -> str:
         # OpenAI API request
+        chat_history.append({"role": "user", "content": f"{user_message}"})
+        conversation_history = "\n".join(f"{message['role']}: {message['content']}" for message in chat_history)
         completion = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
@@ -22,11 +24,11 @@ class OpenAIService:
                     + "; В контексте сообщений: "
                     + conversation_history
                     + "; "
-                    + user_message,
                 },
             ],
             temperature=0,
         )
         response = completion.choices[0].message["content"]
+        chat_history.append({"role": "assistant", "content": f"{response}"})
         # Extracting the generated response from OpenAI
         return response
