@@ -6,7 +6,7 @@ from ..adapters.jwt_service import JWTData
 from .dependencies import parse_jwt_user_data
 
 
-@router.get("/users/{id}/chat")
+@router.get("/users/chat")
 def get_chat(
     jwt_data: JWTData = Depends(parse_jwt_user_data),
     svc: Service = Depends(get_service),
