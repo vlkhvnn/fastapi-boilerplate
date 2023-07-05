@@ -13,6 +13,7 @@ def get_response(
 ) -> str:
     svc.repository.add_user_message(jwt_data.user_id, question)
     chat_history = svc.repository.get_chat_history_by_id(jwt_data.user_id)
-    response = svc.openaiService.generate_chat_response(question, chat_history)
+    token_ensured_chat = chat_history[-10:]
+    response = svc.openaiService.generate_chat_response(question, token_ensured_chat)
     svc.repository.add_response(jwt_data.user_id, response)
     return response
