@@ -12,8 +12,13 @@ class RegisterUserRequest(AppModel):
     password: str
 
 
+class AuthorizeUserResponse(AppModel):
+    access_token: str
+    token_type: str = "Bearer"
+
+
 @router.post(
-    "/users", status_code=status.HTTP_201_CREATED
+    "/users", status_code=status.HTTP_201_CREATED, response_model=AuthorizeUserResponse
 )
 def register_user(
     input: RegisterUserRequest,
@@ -26,5 +31,7 @@ def register_user(
         )
 
     svc.repository.create_user(input.dict())
-
-    return input.email
+    user = svc.repository.get_user_by_email(input.email)
+    return AuthorizeUserResponse(
+        access_token=svc.jwt_svc.create_access_token(user=user),
+    )
